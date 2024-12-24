@@ -26,10 +26,8 @@
                         @session('success')
                             <span class="text-green-500 text-xs">{{ session('success') }}</span>
                         @endsession
-
                 </form>
             </div>
-
         </div>
     </div>
 </div>

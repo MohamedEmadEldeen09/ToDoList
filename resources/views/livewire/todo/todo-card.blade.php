@@ -1,23 +1,29 @@
 <div wire:key='{{ $todo->id }}' class="todo mb-5 card px-5 py-6 bg-white col-span-1 border-t-2 border-blue-500 hover:shadow">
     <div class="flex justify-between space-x-2">
-
         <div class="flex items-center">
+            <!-- switch between completed and not completed -->
             @if ($todo->completed)
-                <input wire:click='toggleOpenDoneTask({{ $todo->id }})' class="mr-2" type="checkbox" checked/>
+                <input wire:click='toggleCompletedTask({{ $todo->id }})' class="mr-2" type="checkbox" checked/>
             @else
-                <input wire:click='toggleOpenDoneTask({{ $todo->id }})' class="mr-2" type="checkbox"/>
+                <input wire:click='toggleCompletedTask({{ $todo->id }})' class="mr-2" type="checkbox"/>
             @endif
 
-<!-- <input type="text" placeholder="Todo.."
-                    class="bg-gray-100  text-gray-900 text-sm rounded block w-full p-2.5"
-                    value="Todo Name">
-                
-                    <span class="text-red-500 text-xs block">error</span> -->
-
-                    <h3 class="text-lg text-semibold text-gray-800">{{ $todo->task }}</h3>
+            <!-- handle show the updating box-->
+            @if ($editingTodoId === $todo->id)
+                <div>
+                    <input wire:model='editingTodoTask' type="text" placeholder="Todo.."
+                        class="bg-gray-100  text-gray-900 text-sm rounded block w-full p-2.5">     
+                    
+                    @error('editingTodoTask')
+                        <span class="text-red-500 text-xs mt-3 block">{{ $message }}</span>
+                    @enderror  
+                </div> 
+            @else
+                <h3 class="text-lg text-semibold text-gray-800">{{ $todo->task }}</h3>
+            @endif
         </div>
         
-
+        <!-- forite - delete - update buttons-->
         <div class="flex items-center space-x-2">
             <button wire:click='edit({{ $todo->id }})' class="text-sm text-teal-500 font-semibold rounded hover:text-teal-800">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -34,17 +40,29 @@
                         d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                 </svg>
             </button>
+
+            @if (!$todo->favorite)
+                <button wire:click='toggleFavoriteTask({{ $todo->id }})' class="text-sm text-teal-500 font-semibold rounded hover:text-teal-800">
+                    unfavorite
+                </button>
+            @else
+                <button wire:click='toggleFavoriteTask({{ $todo->id }})' class="text-sm text-green-500 font-semibold rounded hover:text-green-800">
+                    favorite
+                </button>
+            @endif
         </div>
     </div>
-
     <span class="text-xs text-gray-500"> {{ $todo->created_at }} </span>
 
+    <!-- the updating  box and its functionality-->
     <div class="mt-3 text-xs text-gray-700">
-        <!--                         
-                <button 
-                    class="mt-3 px-4 py-2 bg-teal-500 text-white font-semibold rounded hover:bg-teal-600">Update</button>
-                <button 
-                    class="mt-3 px-4 py-2 bg-red-500 text-white font-semibold rounded hover:bg-red-600">Cancel</button> -->
+        @if ($editingTodoId === $todo->id)
+            <button wire:click='update' class="mt-3 px-4 py-2 bg-teal-500 text-black font-semibold rounded hover:bg-teal-600">Update</button>
+            <button wire:click='cancelEdit' class="mt-3 px-4 py-2 bg-red-500 text-black font-semibold rounded hover:bg-red-600">Cancel</button>
+        @endif
 
+        @session('updated')
+            <span class="text-green-500 text-xs">{{ session('updated') }}</span>
+        @endsession
     </div>
 </div>
